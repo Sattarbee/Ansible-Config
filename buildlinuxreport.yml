@@ -1,17 +1,19 @@
----
 - name: Create Linux Report
   hosts: Linux
   vars:
-    detailedreport: 'True'   # Define the variable here
+    detailedreport: 'True'
 
   tasks:
     - name: Scan Systems for detailed report
-      ansible.builtin.include_role:
+      include_role:
         name: shadowman_scan_systems
       when: detailedreport == 'True'
 
+- name: Build the report on report server
+  hosts: 172.25.225.97
+  run_once: true
+
+  tasks:
     - name: Build the report
-      ansible.builtin.include_role:
+      include_role:
         name: build_report_linux
-      delegate_to: 172.25.225.97
-      run_once: true
