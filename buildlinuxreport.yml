@@ -10,7 +10,7 @@
       when: detailedreport == 'True'
 
 - name: Build the report on specific host
-  hosts: 172.25.225.89
+  hosts: 172.25.225.97
   run_once: true
 
   tasks:
