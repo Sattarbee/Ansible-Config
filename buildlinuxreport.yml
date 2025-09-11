@@ -1,13 +1,13 @@
 - name: Create Linux Report
   hosts: Linux
   vars:
-    detailedreport: 'True'
+    detailedreport: true
 
   tasks:
     - name: Scan Systems for detailed report
       include_role:
         name: shadowman_scan_systems
-      when: detailedreport == 'True'
+      when: detailedreport
 
 - name: Build the report on specific host
   hosts: 172.25.225.97
