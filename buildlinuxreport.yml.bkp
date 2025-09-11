@@ -1,0 +1,19 @@
+- name: Create Linux Report
+  hosts: Linux
+  vars:
+    detailedreport: true
+
+  tasks:
+    - name: Scan Systems for detailed report
+      include_role:
+        name: shadowman_scan_systems
+      when: detailedreport
+
+- name: Build the report on specific host
+  hosts: 172.25.225.97
+  run_once: true
+
+  tasks:
+    - name: Build the report
+      include_role:
+        name: build_report_linux

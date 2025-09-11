@@ -1,17 +1,43 @@
 - name: Create Linux Report
   hosts: Linux
+  become: true
   vars:
     detailedreport: true
 
   tasks:
+
+    - name: Get latest DNF update history ID
+      shell: |
+        dnf history | awk '/Install|Update/ { print $1; exit }'
+      register: patch_id_raw
+      changed_when: false
+
+    - name: Get details of the latest patch (based on DNF history)
+      shell: |
+        dnf history info {{ patch_id_raw.stdout }}
+      register: patch_info
+      changed_when: false
+
+    - name: Save patch info to file for local inspection
+      copy:
+        content: "{{ patch_info.stdout }}"
+        dest: "/tmp/last_patch_info.txt"
+        mode: '0644'
+
+    - name: Save patch info as a fact (for HTML report)
+      set_fact:
+        last_patch_info: "{{ patch_info.stdout }}"
+
     - name: Scan Systems for detailed report
       include_role:
         name: shadowman_scan_systems
       when: detailedreport
 
+# Run once to build report on the web server host
 - name: Build the report on specific host
   hosts: 172.25.225.97
   run_once: true
+  become: true
 
   tasks:
     - name: Build the report
