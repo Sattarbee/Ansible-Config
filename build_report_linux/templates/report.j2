@@ -81,14 +81,24 @@ collapsible: true
         <tr>
             <td class="summary_info">
               <div id="hostname">
-                <p class="hostname"> 
+                <p class="hostname">
                   <img class="router_image" src="server.png"> {{ hostvars[linux_host]['inventory_hostname'].split('.')[0] }}</p>
-                </div>
-{% if detailedreport == 'True' %}
-{% include 'packages.j2' %}
-{% include 'services.j2' %}
-{% endif %}
-</td>
+              </div>
+
+              {% if hostvars[linux_host]['last_patch_info'] is defined %}
+              <div style="background:#f5f5f5; border:1px solid #ccc; padding:10px; margin-top:10px;">
+                <strong>Last Patch Info:</strong>
+                <pre style="white-space: pre-wrap;">{{ hostvars[linux_host]['last_patch_info'] }}</pre>
+              </div>
+              {% else %}
+              <div><em>No patch info found for this host.</em></div>
+              {% endif %}
+
+              {% if detailedreport == 'True' %}
+                {% include 'packages.j2' %}
+                {% include 'services.j2' %}
+              {% endif %}
+            </td>
             <td>{{hostvars[linux_host]['ansible_pkg_mgr']|default("none")}}</td>
             <td>{{hostvars[linux_host]['ansible_os_family']|default("none")}}</td>
             <td>{{hostvars[linux_host]['ansible_distribution_version']|default("none")}}</td>
