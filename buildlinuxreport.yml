@@ -1,8 +1,10 @@
 ---
 - name: Create Linux Report
   hosts: Linux
-  tasks:
+  vars:
+    detailedreport: 'True'   # Define the variable here
 
+  tasks:
     - name: Scan Systems for detailed report
       ansible.builtin.include_role:
         name: shadowman_scan_systems
