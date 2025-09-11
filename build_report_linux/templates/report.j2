@@ -11,11 +11,18 @@
 <script src="https://www.kryogenix.org/code/browser/sorttable/sorttable.js"></script>
 <script>
 $(function() {
-$( "#accordion > div" ).accordion({
+  $("#accordion > div").accordion({
     header: "h3",
     active: false,
-collapsible: true
-});
+    collapsible: true
+  });
+
+  // Initialize accordions for last patch info dynamically by ID pattern
+  $("[id^='accordion-last-patch-']").accordion({
+    header: "h3",
+    active: false,
+    collapsible: true
+  });
 });
 </script>
 <script>
@@ -85,18 +92,20 @@ collapsible: true
                   <img class="router_image" src="server.png"> {{ hostvars[linux_host]['inventory_hostname'].split('.')[0] }}</p>
               </div>
 
-              {% if hostvars[linux_host]['last_patch_info'] is defined %}
-              <div style="background:#f5f5f5; border:1px solid #ccc; padding:10px; margin-top:10px;">
-                <strong>Last Patch Info:</strong>
-                <pre style="white-space: pre-wrap;">{{ hostvars[linux_host]['last_patch_info'] }}</pre>
-              </div>
-              {% else %}
-              <div><em>No patch info found for this host.</em></div>
-              {% endif %}
-
               {% if detailedreport == 'True' %}
                 {% include 'packages.j2' %}
                 {% include 'services.j2' %}
+              {% endif %}
+
+              {% if hostvars[linux_host]['last_patch_info'] is defined %}
+                <div id="accordion-last-patch-{{ linux_host }}" style="margin-top:10px;">
+                  <h3>Last Patch Info</h3>
+                  <div style="background:#f5f5f5; border:1px solid #ccc; padding:10px; font-family: monospace; white-space: pre-wrap;">
+                    {{ hostvars[linux_host]['last_patch_info'] }}
+                  </div>
+                </div>
+              {% else %}
+                <div style="margin-top:10px;"><em>No patch info found for this host.</em></div>
               {% endif %}
             </td>
             <td>{{hostvars[linux_host]['ansible_pkg_mgr']|default("none")}}</td>
