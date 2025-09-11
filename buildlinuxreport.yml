@@ -12,7 +12,6 @@
 
     - name: Build the report
       ansible.builtin.include_role:
-        name: shadowman.reports.build_report_linux
-        apply:
-          delegate_to: 172.25.225.97
-          run_once: true
+        name: build_report_linux
+      delegate_to: 172.25.225.97
+      run_once: true
