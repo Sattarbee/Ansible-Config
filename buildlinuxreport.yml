@@ -5,8 +5,8 @@
     detailedreport: true
 
   tasks:
-    - name: Get last 15 installed packages with install dates
-      shell: "rpm -qa --last | head -15 | awk '{print $1, $2, $3, $4, $5, $6}'"
+    - name: Get last 15 installed packages (names only)
+      shell: "rpm -qa --last | head -15 | awk '{print $1}'"
       register: last_15_installed
       changed_when: false
 
@@ -25,7 +25,9 @@
           Last Reboot Time: {{ last_reboot_time }}
 
           Last 15 Installed Packages:
-          {{ last_15_installed.stdout }}
+          {% for pkg in last_15_installed.stdout_lines %}
+          - {{ pkg }}
+          {% endfor %}
 
     - name: Save patch info to file for local inspection
       copy:
