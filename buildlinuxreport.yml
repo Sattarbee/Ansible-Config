@@ -35,7 +35,7 @@
 
 # Run once to build report on the web server host
 - name: Build the report using all hosts' data
-  hosts: localhost
+  hosts: Linux
   run_once: true
   gather_facts: false
   become: true
