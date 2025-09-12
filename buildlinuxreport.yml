@@ -6,27 +6,49 @@
 
   tasks:
 
-    - name: Get latest DNF update history ID
+    - name: Get latest 15 DNF update/install history IDs
       shell: |
-        dnf history | awk '/Install|Update/ { print $1; exit }'
-      register: patch_id_raw
+        dnf history | awk '/Install|Update/ { print $1 }' | head -15
+      register: patch_ids_raw
       changed_when: false
 
-    - name: Get details of the latest patch (based on DNF history)
+    - name: Get details of the last 15 patches
       shell: |
-        dnf history info {{ patch_id_raw.stdout }}
-      register: patch_info
+        dnf history info {{ item }}
+      loop: "{{ patch_ids_raw.stdout_lines }}"
+      register: patch_details
       changed_when: false
+
+    - name: Concatenate all patch details into one string for report
+      set_fact:
+        last_patch_info: "{{ patch_details.results | map(attribute='stdout') | join('\n\n---\n\n') }}"
+
+    - name: Get last reboot time
+      shell: who -b
+      register: reboot_time_raw
+      changed_when: false
+
+    - name: Parse last reboot time from 'who -b' output
+      set_fact:
+        last_reboot_time: "{{ reboot_time_raw.stdout.split('system boot')[1] | trim }}"
 
     - name: Save patch info to file for local inspection
       copy:
-        content: "{{ patch_info.stdout }}"
-        dest: "/tmp/last_patch_info.txt"
+        content: |
+          Last Reboot Time: {{ last_reboot_time }}
+
+          Last 15 Patch Details:
+
+          {{ last_patch_info }}
+        dest: "/tmp/last_15_patch_info.txt"
         mode: '0644'
 
-    - name: Save patch info as a fact (for HTML report)
+    - name: Set combined last patch and reboot info fact
       set_fact:
-        last_patch_info: "{{ patch_info.stdout }}"
+        last_patch_info: |
+          Last Reboot Time: {{ last_reboot_time }}
+
+          {{ last_patch_info }}
 
     - name: Scan Systems for detailed report
       include_role:
