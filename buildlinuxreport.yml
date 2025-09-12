@@ -5,6 +5,11 @@
     detailedreport: true
 
   tasks:
+    - name: Get system date
+      shell: date
+      register: system_date
+      changed_when: false
+
     - name: Get last 15 installed packages (names only)
       shell: "rpm -qa --last | head -15 | awk '{print $1}'"
       register: last_15_installed
@@ -22,6 +27,7 @@
     - name: Set combined last patch and reboot info fact
       set_fact:
         last_patch_info: |
+          System Date: {{ system_date.stdout }}
           Last Reboot Time: {{ last_reboot_time }}
 
           Last 15 Installed Packages:
