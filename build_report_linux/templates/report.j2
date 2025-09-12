@@ -92,7 +92,7 @@ $(function() {
                   <img class="router_image" src="server.png"> {{ hostvars[linux_host]['inventory_hostname'].split('.')[0] }}</p>
               </div>
 
-              {% if detailedreport == 'True' %}
+              {% if detailedreport is defined and detailedreport | lower == 'true' %}
                 {% include 'packages.j2' %}
                 {% include 'services.j2' %}
               {% endif %}
