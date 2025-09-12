@@ -34,9 +34,10 @@
       when: detailedreport
 
 # Run once to build report on the web server host
-- name: Build the report on specific host
-  hosts: 172.25.225.97
+- name: Build the report using all hosts' data
+  hosts: localhost
   run_once: true
+  gather_facts: false
   become: true
 
   tasks:
