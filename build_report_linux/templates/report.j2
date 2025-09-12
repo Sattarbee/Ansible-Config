@@ -92,11 +92,6 @@ $(function() {
                   <img class="router_image" src="server.png"> {{ hostvars[linux_host]['inventory_hostname'].split('.')[0] }}</p>
               </div>
 
-              {% if detailedreport is defined and detailedreport | lower == 'true' %}
-                {% include 'packages.j2' %}
-                {% include 'services.j2' %}
-              {% endif %}
-
               {% if hostvars[linux_host]['last_patch_info'] is defined %}
                 <div id="accordion-last-patch-{{ linux_host }}" style="margin-top:10px;">
                   <h3>Last Patch Info</h3>
