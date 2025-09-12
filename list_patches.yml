@@ -1,0 +1,48 @@
+- name: List Security Patches Before Patching
+  hosts: Linux
+  become: true
+  gather_facts: false
+  vars:
+    detailedreport: true
+
+  tasks:
+    - name: Get system date
+      shell: date
+      register: system_date
+      changed_when: false
+
+    - name: List security patches available
+      shell: yum updateinfo list security || true
+      register: security_updates
+      changed_when: false
+
+    - name: Set combined security patch info fact
+      set_fact:
+        security_patch_info: |
+          System Date: {{ system_date.stdout }}
+
+          Security Patches Available:
+          {{ security_updates.stdout }}
+
+    - name: Save patch info to file for local inspection
+      copy:
+        content: "{{ security_patch_info }}"
+        dest: "/tmp/security_patches.txt"
+        mode: '0644'
+
+    - name: Scan Systems for detailed report
+      include_role:
+        name: shadowman_scan_systems
+      when: detailedreport
+
+# Run once to build report on the web server host
+- name: Build the report using all hosts' data
+  hosts: Linux
+  run_once: true
+  gather_facts: false
+  become: true
+
+  tasks:
+    - name: Build the report
+      include_role:
+        name: build_report_linux
