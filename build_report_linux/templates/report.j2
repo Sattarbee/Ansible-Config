@@ -53,6 +53,10 @@
       height: 20px;
       margin-right: 8px;
     }
+    .hostname span {
+      cursor: help;
+      border-bottom: 1px dotted #666;
+    }
     .status-badge {
       padding: 3px 8px;
       border-radius: 6px;
@@ -114,7 +118,10 @@
     {% for linux_host in ansible_play_hosts|sort %}
     <div class="card">
       <p class="hostname">
-        <img src="server.png"> {{ hostvars[linux_host]['ansible_hostname'] | default(hostvars[linux_host]['inventory_hostname']) }}
+        <img src="server.png"> 
+        <span title="IP: {{ hostvars[linux_host]['ansible_default_ipv4']['address'] | default('N/A') }}">
+          {{ hostvars[linux_host]['ansible_hostname'] | default(hostvars[linux_host]['inventory_hostname']) }}
+        </span>
         {% if hostvars[linux_host]['last_patch_info'] is defined %}
           <span class="status-badge status-ok">Up-to-date</span>
         {% else %}
