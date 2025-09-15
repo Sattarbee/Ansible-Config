@@ -159,7 +159,7 @@
     {% for linux_host in ansible_play_hosts|sort %}
     <div class="card">
       <p class="hostname">
-        <img src="server.png"> {{ hostvars[linux_host]['inventory_hostname'].split('.')[0] }}
+        <img src="server.png"> {{ hostvars[linux_host]['inventory_hostname'] }}
         {% if hostvars[linux_host]['last_patch_info'] is defined %}
           <span class="status-badge status-ok">Up-to-date</span>
         {% else %}
