@@ -44,4 +44,4 @@
   tasks:
     - name: Build the report
       include_role:
-        name: build_report_linx
+        name: build_report_linux
