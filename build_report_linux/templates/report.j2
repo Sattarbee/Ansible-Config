@@ -32,6 +32,7 @@
   <section>
     <center>
       <h1>Ansible Linux Automation Report</h1>
+      <button onclick="exportTableToCSV('ansible_report.csv')" style="margin: 15px 0; padding: 6px 12px; font-size: 14px;">Download CSV</button>
     </center>
 
     <table class="table table-striped mt32 main_net_table">
@@ -112,5 +113,37 @@
     </center>
   </section>
 </div>
+
+<!-- CSV Export Script -->
+<script>
+function exportTableToCSV(filename) {
+    var csv = [];
+    var rows = document.querySelectorAll("table.main_net_table tr");
+
+    for (var i = 0; i < rows.length; i++) {
+        var row = [], cols = rows[i].querySelectorAll("td, th");
+
+        for (var j = 0; j < cols.length; j++) {
+            var text = cols[j].innerText.replace(/(\r\n|\n|\r)/gm, "").replace(/"/g, '""');
+            row.push('"' + text + '"');
+        }
+
+        csv.push(row.join(","));
+    }
+
+    // Download CSV
+    var csvFile = new Blob([csv.join("\n")], { type: "text/csv" });
+    var downloadLink = document.createElement("a");
+
+    downloadLink.download = filename;
+    downloadLink.href = window.URL.createObjectURL(csvFile);
+    downloadLink.style.display = "none";
+
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    document.body.removeChild(downloadLink);
+}
+</script>
+
 </body>
 </html>
