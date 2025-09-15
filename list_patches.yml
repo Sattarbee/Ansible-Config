@@ -1,33 +1,32 @@
-- name: List Security Patches Before Patching
+- name: Create Linux Report with Security Patches Only
   hosts: Linux
   become: true
-  gather_facts: false
+  gather_facts: true
   vars:
     detailedreport: true
 
   tasks:
-    - name: Get system date
-      shell: date
-      register: system_date
+    - name: Get list of applicable security patches
+      shell: yum updateinfo list security
+      register: security_patches
       changed_when: false
 
-    - name: List security patches available
-      shell: yum updateinfo list security || true
-      register: security_updates
-      changed_when: false
-
-    - name: Set combined security patch info fact
+    - name: Set security patch info fact
       set_fact:
-        security_patch_info: |
-          System Date: {{ system_date.stdout }}
-
-          Security Patches Available:
-          {{ security_updates.stdout }}
+        patch_info: |
+          Applicable Security Patches:
+          {% if security_patches.stdout_lines %}
+          {% for patch in security_patches.stdout_lines %}
+          - {{ patch }}
+          {% endfor %}
+          {% else %}
+          - No applicable security patches found.
+          {% endif %}
 
     - name: Save patch info to file for local inspection
       copy:
-        content: "{{ security_patch_info }}"
-        dest: "/tmp/security_patches.txt"
+        content: "{{ patch_info }}"
+        dest: "/tmp/security_patch_info.txt"
         mode: '0644'
 
     - name: Scan Systems for detailed report
@@ -35,14 +34,14 @@
         name: shadowman_scan_systems
       when: detailedreport
 
-# Run once to build report on the web server host
+# Run once to build report using data from all hosts
 - name: Build the report using all hosts' data
   hosts: Linux
   run_once: true
-  gather_facts: false
+  gather_facts: true
   become: true
 
   tasks:
     - name: Build the report
       include_role:
-        name: build_report_linux
+        name: build_report_linx
