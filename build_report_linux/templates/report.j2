@@ -8,11 +8,10 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
   <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
   <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-  <script src="https://www.kryogenix.org/code/browser/sorttable/sorttable.js"></script>
   <style>
     body {
       font-family: 'Open Sans', sans-serif;
-      background: #f5f7fa;
+      background: #f8f9fa;
       margin: 0;
       padding: 0;
     }
@@ -21,46 +20,37 @@
       justify-content: space-between;
       align-items: center;
       padding: 20px;
-      background: #1e1e2f;
+      background: #20232a;
       color: #fff;
     }
     .download-btn {
       padding: 8px 16px;
       font-size: 14px;
-      background-color: #fff;
-      color: #000;
-      border: 2px solid #000;
-      border-radius: 6px;
+      background-color: white;
+      color: black;
+      border: 2px solid black;
+      border-radius: 4px;
       cursor: pointer;
     }
     .download-btn:hover {
       background-color: #ddd;
     }
-    .search-filter {
-      margin: 20px;
-      text-align: right;
-    }
-    .search-box {
-      padding: 8px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      width: 250px;
-    }
     .card {
       background: #fff;
       border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      margin: 15px;
       padding: 20px;
+      margin: 20px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
     }
     .hostname {
+      font-size: 20px;
       font-weight: bold;
-      font-size: 18px;
+      margin: 0;
       display: flex;
       align-items: center;
     }
     .hostname img {
-      width: 20px;
+      height: 20px;
       margin-right: 8px;
     }
     .status-badge {
@@ -68,37 +58,37 @@
       border-radius: 6px;
       font-size: 12px;
       margin-left: 10px;
-    }
-    .status-ok {
-      background: #4caf50;
       color: #fff;
     }
-    .status-warn {
-      background: #ff9800;
-      color: #fff;
-    }
-    .system-info {
+    .status-ok { background: #28a745; }
+    .status-warn { background: #ffc107; color: #000; }
+    .details {
       margin-top: 10px;
       font-size: 14px;
     }
-    .system-info span {
-      display: inline-block;
+    .details span {
       margin-right: 15px;
     }
-    .kernel {
-      font-family: monospace;
-      background: #f0f0f0;
-      padding: 2px 6px;
-      border-radius: 4px;
-    }
     .accordion-section {
-      margin-top: 15px;
+      margin-top: 10px;
     }
-    .footer {
-      text-align: center;
-      margin-top: 40px;
-      padding: 20px;
-      color: #555;
+    .accordion-section h3 {
+      font-size: 14px;
+      margin: 0;
+    }
+    table.patch-info {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    table.patch-info td {
+      border: 1px solid #ccc;
+      padding: 6px;
+      font-size: 13px;
+    }
+    table.patch-info td:first-child {
+      font-weight: bold;
+      width: 30%;
+      background: #f5f5f5;
     }
   </style>
   <script>
@@ -110,52 +100,17 @@
         heightStyle: "content"
       });
     });
-
-    function filterCards() {
-      var input = document.getElementById("searchInput").value.toLowerCase();
-      var cards = document.getElementsByClassName("card");
-      for (var i = 0; i < cards.length; i++) {
-        var text = cards[i].innerText.toLowerCase();
-        cards[i].style.display = text.includes(input) ? "" : "none";
-      }
-    }
-
-    function exportTableToCSV(filename) {
-      var csv = [];
-      var cards = document.querySelectorAll(".card");
-      cards.forEach(function(card) {
-        var rows = [];
-        rows.push(card.querySelector(".hostname").innerText);
-        rows.push(card.querySelector(".system-info").innerText);
-        csv.push(rows.join(","));
-      });
-
-      var csvFile = new Blob([csv.join("\n")], { type: "text/csv" });
-      var downloadLink = document.createElement("a");
-      downloadLink.download = filename;
-      downloadLink.href = window.URL.createObjectURL(csvFile);
-      document.body.appendChild(downloadLink);
-      downloadLink.click();
-      document.body.removeChild(downloadLink);
-    }
   </script>
 </head>
 <body>
 <div class="wrapper">
   {% include 'header.j2' %}
   <section>
-    <!-- Title + Button -->
     <div class="report-header">
       <h1>Ansible Linux Automation Report</h1>
       <button onclick="exportTableToCSV('ansible_report.csv')" class="download-btn">Download CSV</button>
     </div>
 
-    <!-- Search -->
-    <div class="search-filter">
-      <input type="text" id="searchInput" onkeyup="filterCards()" class="search-box" placeholder="Search by hostname, OS, version...">
-    </div>
-
-    <!-- Cards Layout -->
     {% for linux_host in ansible_play_hosts|sort %}
     <div class="card">
       <p class="hostname">
@@ -166,25 +121,23 @@
           <span class="status-badge status-warn">No Info</span>
         {% endif %}
       </p>
-
-      <div class="system-info">
-        <span><b>Package Manager:</b> {{ hostvars[linux_host]['ansible_pkg_mgr']|default("none") }}</span>
-        <span><b>OS:</b> {{ hostvars[linux_host]['ansible_os_family']|default("none") }} {{ hostvars[linux_host]['ansible_distribution_version']|default("none") }}</span>
-        <span><b>Kernel:</b> <span class="kernel">{{ hostvars[linux_host]['ansible_kernel']|default("none") }}</span></span>
+      <div class="details">
+        <span><strong>Package Manager:</strong> {{ hostvars[linux_host]['ansible_pkg_mgr']|default("none") }}</span>
+        <span><strong>OS:</strong> {{ hostvars[linux_host]['ansible_os_family']|default("none") }} {{ hostvars[linux_host]['ansible_distribution_version']|default("none") }}</span>
+        <span><strong>Kernel:</strong> <code>{{ hostvars[linux_host]['ansible_kernel']|default("none") }}</code></span>
       </div>
 
-      <!-- Last Patch Info -->
+      {% if hostvars[linux_host]['last_patch_info'] is defined %}
       <div id="accordion-last-patch-{{ linux_host }}" class="accordion-section">
         <h3>Last Patch Info</h3>
         <div>
-          {% if hostvars[linux_host]['last_patch_info'] is defined %}
-          <table style="width:100%; border-collapse: collapse;">
+          <table class="patch-info">
             <tr>
-              <td><b>Hostname</b></td>
-              <td>{{ hostvars[linux_host]['ansible_hostname'] | default(hostvars[linux_host]['inventory_hostname']) }}</td>
+              <td>IP Address</td>
+              <td>{{ hostvars[linux_host]['ansible_default_ipv4']['address'] | default('N/A') }}</td>
             </tr>
             <tr>
-              <td><b>User ID</b></td>
+              <td>User ID</td>
               <td>{{ hostvars[linux_host]['ansible_user'] | default('N/A') }}</td>
             </tr>
             {% set lines = hostvars[linux_host]['last_patch_info'].split('\n') %}
@@ -193,7 +146,7 @@
                 {% set parts = line.split(':', 1) %}
                 {% if parts|length == 2 %}
                 <tr>
-                  <td><b>{{ parts[0].strip() }}</b></td>
+                  <td>{{ parts[0].strip() }}</td>
                   <td>{{ parts[1].strip() }}</td>
                 </tr>
                 {% else %}
@@ -204,19 +157,47 @@
               {% endif %}
             {% endfor %}
           </table>
-          {% else %}
-          <p><em>No patch info found for this host.</em></p>
-          {% endif %}
         </div>
       </div>
+      {% else %}
+      <div style="margin-top:10px;"><em>No patch info found for this host.</em></div>
+      {% endif %}
     </div>
     {% endfor %}
 
-    <div class="footer">
-      <p>Created with ❤️ using Ansible</p>
-      <img src="webpage_logo.png" width="250">
-    </div>
+    <center>
+      <p>Created with</p><br>
+      <img src="webpage_logo.png" width="300">
+    </center>
   </section>
 </div>
+
+<!-- CSV Export Script -->
+<script>
+function exportTableToCSV(filename) {
+    var csv = [];
+    var rows = document.querySelectorAll("table.patch-info tr");
+
+    for (var i = 0; i < rows.length; i++) {
+        var row = [], cols = rows[i].querySelectorAll("td, th");
+
+        for (var j = 0; j < cols.length; j++) {
+            var text = cols[j].innerText.replace(/(\r\n|\n|\r)/gm, "").replace(/"/g, '""');
+            row.push('"' + text + '"');
+        }
+        csv.push(row.join(","));
+    }
+
+    var csvFile = new Blob([csv.join("\n")], { type: "text/csv" });
+    var downloadLink = document.createElement("a");
+    downloadLink.download = filename;
+    downloadLink.href = window.URL.createObjectURL(csvFile);
+    downloadLink.style.display = "none";
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    document.body.removeChild(downloadLink);
+}
+</script>
+
 </body>
 </html>
