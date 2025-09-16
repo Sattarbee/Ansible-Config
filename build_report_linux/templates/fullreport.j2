@@ -4,7 +4,7 @@
   <title> Ansible Linux Automation Report </title>
   <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Open+Sans" />
   <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-  <!-- <link rel="stylesheet" href="css/new.css"> -->
+  <link rel="stylesheet" href="css/new.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
   <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
   <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
@@ -22,7 +22,7 @@
 <body>
 <div class="wrapper">
   <header>
-    <div class="header-container" style="display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; background-color: #222;">
+    <div class="header-container" style="display: flex; justify-content: space-between; align-items: center; padding: 10px 20px;">
       <a href="https://ansible.com" style="display: flex; align-items: center; text-decoration: none;">
         <img
           class="header-logo"
@@ -34,8 +34,12 @@
         <span style="color: white; font-weight: bold; font-size: 18px;">Red Hat Ansible</span>
       </a>
 
-      <input type="text" id="search-bar" placeholder="Search..." style="padding: 6px 10px; font-size: 14px; border-radius: 4px; border: 2px solid red; width: 200px; background: white; color: black;" />
-      <span style="color: white; margin-left: 10px;">Search bar visible</span>
+      <input
+        type="text"
+        id="search-bar"
+        placeholder="Search..."
+        style="background-color: white; color: black; border: 1px solid #ccc; padding: 6px 10px; font-size: 14px; border-radius: 4px; width: 200px;"
+      />
     </div>
   </header>
 
