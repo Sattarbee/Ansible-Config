@@ -22,19 +22,20 @@
 <body>
 <div class="wrapper">
   <header>
-    <div class="header-container">
-      <a href="https://ansible.com">
+    <div class="header-container" style="display: flex; justify-content: space-between; align-items: center; padding: 10px 20px;">
+      <a href="https://ansible.com" style="display: flex; align-items: center;">
         <img
           class="header-logo"
           src="redhat-ansible-logo.svg"
           title="Red Hat Ansible"
           alt="Red Hat Ansible"
+          style="height: 40px;"
         />
       </a>
 
-      <!-- Added search bar aligned to right -->
-      <div style="float: right; margin-top: 15px;">
-        <input type="text" id="search-bar" placeholder="Search..." style="padding: 5px; font-size: 14px;" />
+      <!-- Search bar aligned to right -->
+      <div>
+        <input type="text" id="search-bar" placeholder="Search..." style="padding: 5px 10px; font-size: 14px; border-radius: 4px; border: 1px solid #ccc;" />
       </div>
     </div>
   </header>
