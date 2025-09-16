@@ -6,7 +6,6 @@
   <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
   <link rel="stylesheet" href="css/new.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
-  <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
   <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
   <script src="https://www.kryogenix.org/code/browser/sorttable/sorttable.js"></script>
   <script>
@@ -17,49 +16,6 @@
         collapsible: true
       });
     });
-  </script>
-  <script>
-    (function(document) {
-      'use strict';
-
-      var TableFilter = (function(myArray) {
-        var search_input;
-
-        function _onInputSearch(e) {
-          search_input = e.target;
-          var tables = document.getElementsByClassName(search_input.getAttribute('data-table'));
-          myArray.forEach.call(tables, function(table) {
-            myArray.forEach.call(table.tBodies, function(tbody) {
-              myArray.forEach.call(tbody.rows, function(row) {
-                var hostnameCell = row.cells[0];
-                if (!hostnameCell) return;
-
-                var text_content = hostnameCell.textContent.toLowerCase();
-                var search_val = search_input.value.toLowerCase();
-
-                row.style.display = text_content.indexOf(search_val) > -1 ? '' : 'none';
-              });
-            });
-          });
-        }
-
-        return {
-          init: function() {
-            var inputs = document.getElementsByClassName('search-input');
-            myArray.forEach.call(inputs, function(input) {
-              input.oninput = _onInputSearch;
-            });
-          }
-        };
-      })(Array.prototype);
-
-      document.addEventListener('readystatechange', function() {
-        if (document.readyState === 'complete') {
-          TableFilter.init();
-        }
-      });
-
-    })(document);
   </script>
 </head>
 <body>
@@ -77,13 +33,13 @@
         <span style="color: white; font-weight: bold; font-size: 18px;">Red Hat Ansible</span>
       </a>
 
-      <!-- Added class "search-input" and data-table="main_net_table" -->
+      <!-- Updated search input with class and data-table for your script -->
       <input
         type="text"
         id="search-bar"
         class="search-input"
         data-table="main_net_table"
-        placeholder="Search..."
+        placeholder="Search Hostname..."
         style="background-color: white; color: black; border: 1px solid #ccc; padding: 6px 10px; font-size: 14px; border-radius: 4px; width: 200px;"
       />
     </div>
@@ -142,5 +98,50 @@
     </center>
   </section>
 </div>
+
+<!-- Your TableFilter search script -->
+<script>
+  (function(document) {
+      'use strict';
+
+      var TableFilter = (function(myArray) {
+          var search_input;
+
+          function _onInputSearch(e) {
+              search_input = e.target;
+              var tables = document.getElementsByClassName(search_input.getAttribute('data-table'));
+              myArray.forEach.call(tables, function(table) {
+                  myArray.forEach.call(table.tBodies, function(tbody) {
+                      myArray.forEach.call(tbody.rows, function(row) {
+                          // Restrict search to only the first cell (hostname column)
+                          var cell = row.cells[0];
+                          if (!cell) return;
+                          var text_content = cell.textContent.toLowerCase();
+                          var search_val = search_input.value.toLowerCase();
+                          row.style.display = text_content.indexOf(search_val) > -1 ? '' : 'none';
+                      });
+                  });
+              });
+          }
+
+          return {
+              init: function() {
+                  var inputs = document.getElementsByClassName('search-input');
+                  myArray.forEach.call(inputs, function(input) {
+                      input.oninput = _onInputSearch;
+                  });
+              }
+          };
+      })(Array.prototype);
+
+      document.addEventListener('readystatechange', function() {
+          if (document.readyState === 'complete') {
+              TableFilter.init();
+          }
+      });
+
+  })(document);
+</script>
+
 </body>
 </html>
