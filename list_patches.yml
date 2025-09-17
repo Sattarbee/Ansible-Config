@@ -1,7 +1,6 @@
 - name: Get Available Patches Info from Linux Hosts
   hosts: Linux
   become: true
-  gather_facts: true
   vars:
     detailedreport: true
 
