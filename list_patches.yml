@@ -11,7 +11,7 @@
         name: shadowman_scan_systems
 
 - name: Build combined report on localhost
-  hosts: localhost
+  hosts: Linux
   gather_facts: false
   become: false
   run_once: true
