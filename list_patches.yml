@@ -34,18 +34,15 @@
         name: shadowman_scan_systems
       when: detailedreport
 
-- name: Build combined patch report on localhost
+# Run once to build report on the web server host
+- name: Build the report using all hosts' data
   hosts: Linux
-  gather_facts: false
-  become: false
   run_once: true
-
-  vars:
-    aggregated_patch_info: "{{ groups['Linux'] | map('extract', hostvars, 'available_patch_info') | list }}"
+  gather_facts: false
+  become: true
 
   tasks:
-    - name: Build combined patch report using aggregated patch info
+    - name: Build the report
       include_role:
         name: build_report_linux
-      vars:
-        all_patch_info: "{{ aggregated_patch_info }}"
+
