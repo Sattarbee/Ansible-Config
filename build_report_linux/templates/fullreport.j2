@@ -20,63 +20,72 @@
   </script>
 </head>
 <body>
-  <div class="wrapper">
-    <header>
-      <div class="header-container">
-        <a href="https://ansible.com">
-          <img class="header-logo" src="redhat-ansible-logo.svg" title="Red Hat Ansible" alt="Red Hat Ansible" />
-        </a>
-      </div>
-    </header>
-    <section>
-      <center>
-        <h1>Ansible Linux Automation Report</h1>
-      </center>
-      <table class="table table-striped mt32 main_net_table">
-        <thead>
-          <tr>
-            <th>Linux Device</th>
-            <th>Package Manager</th>
-            <th>Operating System</th>
-            <th>Operating System Version</th>
-            <th>Operating System Kernel Version</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for linux_host in ansible_play_hosts|sort %}
-          <tr>
-            <td class="summary_info">
-              <div id="hostname">
-                <p class="hostname">
-                  <img class="router_image" src="server.png"> {{ hostvars[linux_host]['inventory_hostname'].split('.')[0] }}
-                </p>
-              </div>
-              <!-- ONLY Last Patch Info SECTION -->
-              <div id="accordion">
-                <div class="ui-accordion ui-widget ui-helper-reset" role="tablist">
-                  <h3 class="ui-accordion-header ui-corner-top ui-state-default ui-accordion-icons ui-accordion-header-collapsed ui-corner-all" role="tab" aria-selected="false" aria-expanded="false" tabindex="0">
-                    Last Patch Info
-                  </h3>
-                  <div class="net_content ui-accordion-content ui-corner-bottom ui-helper-reset ui-widget-content" role="tabpanel" aria-hidden="true" style="display: none; height: 194px;">
-                    <pre>{{ hostvars[linux_host]['last_patch_info']|default('No patch info available') }}</pre>
-                  </div>
+<div class="wrapper">
+  <header>
+    <div class="header-container">
+      <a href="https://ansible.com">
+        <img
+          class="header-logo"
+          src="redhat-ansible-logo.svg"
+          title="Red Hat Ansible"
+          alt="Red Hat Ansible"
+        />
+      </a>
+    </div>
+  </header>
+
+  <section>
+    <center>
+      <h1>Ansible Linux Automation Report</h1>
+    </center>
+
+    <table class="table table-striped mt32 main_net_table">
+      <thead>
+        <tr>
+          <th>Linux Device</th>
+          <th>Package Manager</th>
+          <th>Operating System</th>
+          <th>Operating System Version</th>
+          <th>Operating System Kernel Version</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for linux_host in ansible_play_hosts|sort %}
+        <tr>
+          <td class="summary_info">
+            <div id="hostname">
+              <p class="hostname">
+                <img class="router_image" src="server.png"> {{ hostvars[linux_host]['inventory_hostname'].split('.')[0] }}
+              </p>
+            </div>
+
+            <!-- ONLY Last Patch Info SECTION -->
+            <div id="accordion">
+              <div class="ui-accordion ui-widget ui-helper-reset" role="tablist">
+                <h3 class="ui-accordion-header ui-corner-top ui-state-default ui-accordion-icons ui-accordion-header-collapsed ui-corner-all" role="tab" aria-selected="false" aria-expanded="false" tabindex="0">
+                  Last Patch Info
+                </h3>
+                <div class="net_content ui-accordion-content ui-corner-bottom ui-helper-reset ui-widget-content" role="tabpanel" aria-hidden="true" style="display: none; height: 194px;">
+                  <pre>{{ hostvars[linux_host]['last_patch_info']|default('No patch info available') }}</pre>
                 </div>
               </div>
-              <!-- END Last Patch Info SECTION -->
-            </td>
-            <td>{{ hostvars[linux_host]['ansible_pkg_mgr']|default("none") }}</td>
-            <td>{{ hostvars[linux_host]['ansible_os_family']|default("none") }}</td>
-            <td>{{ hostvars[linux_host]['ansible_distribution_version']|default("none") }}</td>
-            <td>{{ hostvars[linux_host]['ansible_kernel']|default("none") }}</td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-      <center>
-        <p>Created with</p><br>
-        <img src="webpage_logo.png" width="300">
-      </center>
-    </section>
-  </div>
+            </div>
+            <!-- END Last Patch Info SECTION -->
+          </td>
+          <td>{{ hostvars[linux_host]['ansible_pkg_mgr']|default("none") }}</td>
+          <td>{{ hostvars[linux_host]['ansible_os_family']|default("none") }}</td>
+          <td>{{ hostvars[linux_host]['ansible_distribution_version']|default("none") }}</td>
+          <td>{{ hostvars[linux_host]['ansible_kernel']|default("none") }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <center>
+      <p>Created with</p><br>
+      <img src="webpage_logo.png" width="300">
+    </center>
+  </section>
+</div>
 </body>
 </html>
