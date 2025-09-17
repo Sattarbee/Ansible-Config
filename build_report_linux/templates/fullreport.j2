@@ -1,90 +1,72 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title> Ansible Linux Automation Report </title>
-  <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Open+Sans" />
+  <title>Ansible Linux Automation Report</title>
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Open+Sans">
   <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
   <link rel="stylesheet" href="css/new.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
   <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
   <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-  <script src="https://www.kryogenix.org/code/browser/sorttable/sorttable.js"></script>
   <script>
     $(function() {
-      $("#accordion > div").accordion({
+      $(".accordion").accordion({
         header: "h3",
         active: false,
         collapsible: true
       });
     });
   </script>
+  <style>
+    body { font-family: "Open Sans", sans-serif; background: #f4f6f9; margin: 0; padding: 0; }
+    header { background: #111; padding: 15px; }
+    .header-container img { height: 40px; }
+    section { padding: 20px; }
+    h1 { background: #1a1d23; color: #fff; padding: 15px; border-radius: 6px; }
+    .download-btn { float: right; margin-top: -45px; margin-right: 20px; padding: 8px 15px; background: #fff; border: 1px solid #333; border-radius: 4px; cursor: pointer; }
+    .card { background: #fff; border-radius: 8px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 6px rgba(0,0,0,0.15); }
+    .hostname { font-size: 20px; font-weight: bold; display: inline-block; margin-left: 10px; }
+    .status { background: #28a745; color: #fff; font-size: 12px; padding: 4px 10px; border-radius: 12px; margin-left: 10px; }
+    .details { margin-top: 10px; font-size: 14px; }
+    .accordion { margin-top: 10px; }
+    .accordion h3 { font-size: 14px; cursor: pointer; padding: 6px; }
+    .accordion pre { background: #f8f9fa; padding: 10px; border-radius: 4px; overflow-x: auto; }
+  </style>
 </head>
 <body>
 <div class="wrapper">
   <header>
     <div class="header-container">
       <a href="https://ansible.com">
-        <img
-          class="header-logo"
-          src="redhat-ansible-logo.svg"
-          title="Red Hat Ansible"
-          alt="Red Hat Ansible"
-        />
+        <img src="redhat-ansible-logo.svg" alt="Red Hat Ansible" />
       </a>
     </div>
   </header>
 
   <section>
-    <center>
-      <h1>Ansible Linux Automation Report</h1>
-    </center>
+    <h1>Ansible Linux Automation Report</h1>
+    <button class="download-btn">Download CSV</button>
 
-    <table class="table table-striped mt32 main_net_table">
-      <thead>
-        <tr>
-          <th>Linux Device</th>
-          <th>Package Manager</th>
-          <th>Operating System</th>
-          <th>Operating System Version</th>
-          <th>Operating System Kernel Version</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for linux_host in ansible_play_hosts|sort %}
-        <tr>
-          <td class="summary_info">
-            <div id="hostname">
-              <p class="hostname">
-                <img class="router_image" src="server.png"> {{ hostvars[linux_host]['inventory_hostname'].split('.')[0] }}
-              </p>
-            </div>
-
-            <!-- ONLY Last Patch Info SECTION -->
-            <div id="accordion">
-              <div class="ui-accordion ui-widget ui-helper-reset" role="tablist">
-                <h3 class="ui-accordion-header ui-corner-top ui-state-default ui-accordion-icons ui-accordion-header-collapsed ui-corner-all" role="tab" aria-selected="false" aria-expanded="false" tabindex="0">
-                  Last Patch Info
-                </h3>
-                <div class="net_content ui-accordion-content ui-corner-bottom ui-helper-reset ui-widget-content" role="tabpanel" aria-hidden="true" style="display: none; height: 194px;">
-                  <pre>{{ hostvars[linux_host]['last_patch_info']|default('No patch info available') }}</pre>
-                </div>
-              </div>
-            </div>
-            <!-- END Last Patch Info SECTION -->
-          </td>
-          <td>{{ hostvars[linux_host]['ansible_pkg_mgr']|default("none") }}</td>
-          <td>{{ hostvars[linux_host]['ansible_os_family']|default("none") }}</td>
-          <td>{{ hostvars[linux_host]['ansible_distribution_version']|default("none") }}</td>
-          <td>{{ hostvars[linux_host]['ansible_kernel']|default("none") }}</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-
-    <center>
-      <p>Created with</p><br>
-      <img src="webpage_logo.png" width="300">
-    </center>
+    {% for linux_host in ansible_play_hosts|sort %}
+    <div class="card">
+      <div>
+        <img src="server.png" alt="server" width="24" style="vertical-align: middle;">
+        <span class="hostname">{{ hostvars[linux_host]['inventory_hostname'].split('.')[0] }}</span>
+        <span class="status">Up-to-date</span>
+      </div>
+      <div class="details">
+        <b>Package Manager:</b> {{ hostvars[linux_host]['ansible_pkg_mgr']|default("none") }} &nbsp; | &nbsp;
+        <b>OS:</b> {{ hostvars[linux_host]['ansible_distribution']|default("none") }} {{ hostvars[linux_host]['ansible_distribution_version']|default("none") }} &nbsp; | &nbsp;
+        <b>Kernel:</b> {{ hostvars[linux_host]['ansible_kernel']|default("none") }}
+      </div>
+      <div class="accordion">
+        <h3>Last Patch Info</h3>
+        <div>
+          <pre>{{ hostvars[linux_host]['last_patch_info']|default('No patch info available') }}</pre>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
   </section>
 </div>
 </body>
