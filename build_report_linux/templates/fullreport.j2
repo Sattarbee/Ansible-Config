@@ -1,139 +1,71 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Ansible Linux Automation Report</title>
-  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Open+Sans">
-  <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-  <link rel="stylesheet" href="css/new.css">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
-  <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
-  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-  <script>
-    $(function() {
-      $(".accordion").accordion({
-        header: "h3",
-        active: false,
-        collapsible: true
-      });
-    });
-
-    // Search filter
-    function filterHosts() {
-      var input = document.getElementById("searchInput");
-      var filter = input.value.toLowerCase();
-      var cards = document.getElementsByClassName("card");
-      for (var i = 0; i < cards.length; i++) {
-        var hostname = cards[i].getElementsByClassName("hostname")[0];
-        if (hostname) {
-          var txtValue = hostname.textContent || hostname.innerText;
-          if (txtValue.toLowerCase().indexOf(filter) > -1) {
-            cards[i].style.display = "";
-          } else {
-            cards[i].style.display = "none";
-          }
+    <meta charset="UTF-8">
+    <title>Ansible Patch Report</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .host-card { border: 1px solid #ccc; border-radius: 8px; margin: 15px; padding: 15px; background: #f9f9f9; }
+        .host-header { font-size: 20px; font-weight: bold; margin-bottom: 10px; }
+        .status { padding: 4px 8px; border-radius: 5px; color: white; font-size: 12px; }
+        .status.up-to-date { background: green; }
+        .status.pending { background: orange; }
+        .status.failed { background: red; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        table, th, td { border: 1px solid #ccc; padding: 8px; text-align: left; vertical-align: top; }
+        th { background: #eee; }
+        .search-box { margin-bottom: 20px; }
+        .search-input { width: 100%; padding: 8px; font-size: 14px; border: 1px solid #ccc; border-radius: 5px; }
+    </style>
+    <script>
+        function searchHosts() {
+            let input = document.getElementById("searchInput").value.toLowerCase();
+            let cards = document.getElementsByClassName("host-card");
+            for (let i = 0; i < cards.length; i++) {
+                let cardText = cards[i].innerText.toLowerCase();
+                cards[i].style.display = cardText.includes(input) ? "" : "none";
+            }
         }
-      }
-    }
-  </script>
-  <style>
-    body { font-family: "Open Sans", sans-serif; background: #f4f6f9; margin: 0; padding: 0; }
-    header { background: #111; padding: 15px; }
-    .header-container img { height: 40px; }
-    section { padding: 20px; }
-    h1 { background: #1a1d23; color: #fff; padding: 15px; border-radius: 6px; display: inline-block; }
-    .download-btn { float: right; margin-top: -45px; margin-right: 20px; padding: 8px 15px; background: #fff; border: 1px solid #333; border-radius: 4px; cursor: pointer; }
-    .search-box { margin: 15px 0; }
-    .search-box input { padding: 8px; width: 300px; border-radius: 4px; border: 1px solid #ccc; }
-    .card { background: #fff; border-radius: 8px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 6px rgba(0,0,0,0.15); }
-    .hostname { font-size: 20px; font-weight: bold; display: inline-block; margin-left: 10px; }
-    .status { background: #28a745; color: #fff; font-size: 12px; padding: 4px 10px; border-radius: 12px; margin-left: 10px; }
-    .details { margin-top: 10px; font-size: 14px; }
-    .accordion { margin-top: 10px; }
-    .accordion h3 { font-size: 14px; cursor: pointer; padding: 6px; }
-    .accordion table { width:100%; border-collapse: collapse; font-size:14px; margin-top:8px; }
-    .accordion th { background:#c00; color:#fff; padding:8px; text-align:left; }
-    .accordion td { padding:6px; border:1px solid #ddd; }
-    .accordion ul { margin:0; padding-left:18px; }
-  </style>
+    </script>
 </head>
 <body>
-<div class="wrapper">
-  <header>
-    <div class="header-container">
-      <a href="https://ansible.com">
-        <img src="redhat-ansible-logo.svg" alt="Red Hat Ansible" />
-      </a>
-    </div>
-  </header>
-
-  <section>
-    <h1>Ansible Linux Automation Report</h1>
-    <button class="download-btn">Download CSV</button>
+    <h1>Ansible Patch Report</h1>
 
     <div class="search-box">
-      <input type="text" id="searchInput" onkeyup="filterHosts()" placeholder="Search for hostname...">
+        <input type="text" id="searchInput" class="search-input" onkeyup="searchHosts()" placeholder="Search for a host, IP, or package...">
     </div>
 
-    {% for linux_host in ansible_play_hosts|sort %}
-    <div class="card">
-      <div>
-        <img src="server.png" alt="server" width="24" style="vertical-align: middle;">
-        <span class="hostname">
-          {{ hostvars[linux_host]['ansible_hostname'] 
-             | default(hostvars[linux_host]['inventory_hostname'].split('.')[0]) }}
-        </span>
-        <span class="status">Up-to-date</span>
-      </div>
-      <div class="details">
-        <b>Package Manager:</b> {{ hostvars[linux_host]['ansible_pkg_mgr']|default("none") }} &nbsp; | &nbsp;
-        <b>OS:</b> {{ hostvars[linux_host]['ansible_distribution']|default("none") }} {{ hostvars[linux_host]['ansible_distribution_version']|default("none") }} &nbsp; | &nbsp;
-        <b>Kernel:</b> {{ hostvars[linux_host]['ansible_kernel']|default("none") }}
-      </div>
-      <div class="accordion">
-        <h3>Last Patch Info</h3>
-        <div>
-          <table>
-            <thead>
-              <tr>
-                <th colspan="2">Last Patch Info</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><b>IP Address</b></td>
-                <td>{{ hostvars[linux_host]['ansible_host']|default("N/A") }}</td>
-              </tr>
-              <tr>
-                <td><b>User ID</b></td>
-                <td>{{ hostvars[linux_host]['ansible_user_id']|default("N/A") }}</td>
-              </tr>
-              <tr>
-                <td><b>System Date</b></td>
-                <td>{{ hostvars[linux_host]['system_date']|default("N/A") }}</td>
-              </tr>
-              <tr>
-                <td><b>Last Reboot Time</b></td>
-                <td>{{ hostvars[linux_host]['last_reboot']|default("N/A") }}</td>
-              </tr>
-              <tr>
-                <td valign="top"><b>Last 15 Installed Packages</b></td>
-                <td>
-                  <ul>
-                    {% for pkg in hostvars[linux_host]['last_installed_packages']|default([]) %}
-                    <li>{{ pkg }}</li>
-                    {% else %}
-                    <li>No package data available</li>
-                    {% endfor %}
-                  </ul>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+    {% for linux_host in groups['all'] %}
+    <div class="host-card">
+        <div class="host-header">
+            {{ hostvars[linux_host]['ansible_hostname'] 
+               | default(hostvars[linux_host]['inventory_hostname'].split('.')[0]) }}
+            <span class="status up-to-date">Up-to-date</span>
         </div>
-      </div>
+        <p><strong>Package Manager:</strong> {{ hostvars[linux_host]['ansible_pkg_mgr'] | default('N/A') }}</p>
+        <p><strong>OS:</strong> {{ hostvars[linux_host]['ansible_distribution'] | default('N/A') }} {{ hostvars[linux_host]['ansible_distribution_version'] | default('') }}</p>
+        <p><strong>Kernel:</strong> {{ hostvars[linux_host]['ansible_kernel'] | default('N/A') }}</p>
+
+        <h3>Last Patch Info</h3>
+        <table>
+            <tr><th>IP Address</th><td>{{ hostvars[linux_host]['ansible_host'] | default('N/A') }}</td></tr>
+            <tr><th>User ID</th><td>{{ hostvars[linux_host]['ansible_user'] | default('N/A') }}</td></tr>
+            <tr><th>System Date</th><td>{{ hostvars[linux_host]['system_date'].stdout | default('N/A') }}</td></tr>
+            <tr><th>Last Reboot Time</th><td>{{ hostvars[linux_host]['last_reboot'].stdout | default('N/A') }}</td></tr>
+            <tr>
+                <th>Last 15 Installed Packages</th>
+                <td>
+                    {% if hostvars[linux_host]['last_installed_packages'] is defined and hostvars[linux_host]['last_installed_packages'].stdout_lines %}
+                        {% for pkg in hostvars[linux_host]['last_installed_packages'].stdout_lines %}
+                            - {{ pkg }}<br>
+                        {% endfor %}
+                    {% else %}
+                        No package data available
+                    {% endif %}
+                </td>
+            </tr>
+        </table>
     </div>
     {% endfor %}
-  </section>
-</div>
 </body>
 </html>
