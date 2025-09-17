@@ -1,81 +1,143 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Test Search Box for Cards</title>
-  <style>
-    body {
-      background: #353a40;
-      color: white;
-      font-family: Arial, sans-serif;
-    }
-    header {
-      background: #171717;
-      padding: 10px 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .host-card {
-      background: #222;
-      border-radius: 8px;
-      padding: 15px;
-      margin: 15px 20px;
-      color: white;
-    }
-    .hostname {
-      font-weight: bold;
-      font-size: 18px;
-      display: inline-block;
-      vertical-align: middle;
-    }
-    .host-icon {
-      width: 35px;
-      margin-right: 10px;
-      vertical-align: middle;
-    }
-  </style>
+  <title> Ansible Linux Automation Report </title>
+  <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Open+Sans" />
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+  <link rel="stylesheet" href="css/new.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+  <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  <script src="https://www.kryogenix.org/code/browser/sorttable/sorttable.js"></script>
+  <script>
+    $(function() {
+      $("#accordion > div").accordion({
+        header: "h3",
+        active: false,
+        collapsible: true
+      });
+    });
+  </script>
 </head>
 <body>
+<div class="wrapper">
+  <header>
+    <div class="header-container" style="display: flex; justify-content: space-between; align-items: center; padding: 10px 20px;">
+      <a href="https://ansible.com" style="display: flex; align-items: center; text-decoration: none;">
+        <img
+          class="header-logo"
+          src="redhat-ansible-logo.svg"
+          title="Red Hat Ansible"
+          alt="Red Hat Ansible"
+          style="height: 40px; margin-right: 10px;"
+        />
+        <span style="color: white; font-weight: bold; font-size: 18px;">Red Hat Ansible</span>
+      </a>
 
-<header>
-  <a href="https://ansible.com" style="color: white; text-decoration: none; font-weight: bold;">Red Hat Ansible</a>
-  <input
-    type="text"
-    id="search-host"
-    placeholder="Search Hostname..."
-    style="background-color: white; color: black; border: 1px solid #ccc; padding: 6px 10px; font-size: 14px; border-radius: 4px; width: 200px;"
-  />
-</header>
+      <input
+        type="text"
+        id="search-bar"
+        class="search-input"
+        data-table="main_net_table"
+        placeholder="Search..."
+        style="background-color: white; color: black; border: 1px solid #ccc; padding: 6px 10px; font-size: 14px; border-radius: 4px; width: 200px;"
+      />
+    </div>
+  </header>
 
-<div id="hosts-container">
-  <div class="host-card">
-    <img class="host-icon" src="server.png" alt="server" />
-    <span class="hostname">ansible-linux</span>
-    <span style="background: #28a745; padding: 2px 8px; border-radius: 4px; font-size: 12px; margin-left: 8px;">Up-to-date</span>
-    <div>Package Manager: dnf &nbsp;&nbsp; OS: RedHat 9.6 &nbsp;&nbsp; Kernel: 5.14.0-570...</div>
-  </div>
-  <div class="host-card">
-    <img class="host-icon" src="server.png" alt="server" />
-    <span class="hostname">mtpansibletower</span>
-    <span style="background: #28a745; padding: 2px 8px; border-radius: 4px; font-size: 12px; margin-left: 8px;">Up-to-date</span>
-    <div>Package Manager: dnf &nbsp;&nbsp; OS: RedHat 9.6 &nbsp;&nbsp; Kernel: 5.14.0-570...</div>
-  </div>
+  <section>
+    <center>
+      <h1>Ansible Linux Automation Report</h1>
+    </center>
+
+    <table class="table table-striped mt32 main_net_table">
+      <thead>
+        <tr>
+          <th>Linux Device</th>
+          <th>Package Manager</th>
+          <th>Operating System</th>
+          <th>Operating System Version</th>
+          <th>Operating System Kernel Version</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for linux_host in ansible_play_hosts|sort %}
+        <tr>
+          <td class="summary_info">
+            <div id="hostname">
+              <p class="hostname">
+                <img class="router_image" src="server.png"> {{ hostvars[linux_host]['inventory_hostname'].split('.')[0] }}
+              </p>
+            </div>
+
+            <!-- ONLY Last Patch Info SECTION -->
+            <div id="accordion">
+              <div class="ui-accordion ui-widget ui-helper-reset" role="tablist">
+                <h3 class="ui-accordion-header ui-corner-top ui-state-default ui-accordion-icons ui-accordion-header-collapsed ui-corner-all" role="tab" aria-selected="false" aria-expanded="false" tabindex="0">
+                  Last Patch Info
+                </h3>
+                <div class="net_content ui-accordion-content ui-corner-bottom ui-helper-reset ui-widget-content" role="tabpanel" aria-hidden="true" style="display: none; height: 194px;">
+                  <pre>{{ hostvars[linux_host]['last_patch_info']|default('No patch info available') }}</pre>
+                </div>
+              </div>
+            </div>
+            <!-- END Last Patch Info SECTION -->
+          </td>
+          <td>{{ hostvars[linux_host]['ansible_pkg_mgr']|default("none") }}</td>
+          <td>{{ hostvars[linux_host]['ansible_os_family']|default("none") }}</td>
+          <td>{{ hostvars[linux_host]['ansible_distribution_version']|default("none") }}</td>
+          <td>{{ hostvars[linux_host]['ansible_kernel']|default("none") }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <center>
+      <p>Created with</p><br>
+      <img src="webpage_logo.png" width="300">
+    </center>
+  </section>
 </div>
 
+<!-- Search filter script -->
 <script>
-  document.getElementById('search-host').addEventListener('input', function() {
-    const filter = this.value.toLowerCase();
-    const hosts = document.querySelectorAll('#hosts-container .host-card');
+  (function(document) {
+    'use strict';
 
-    hosts.forEach(card => {
-      const hostname = card.querySelector('.hostname').textContent.toLowerCase();
-      if (hostname.includes(filter)) {
-        card.style.display = '';
-      } else {
-        card.style.display = 'none';
+    var TableFilter = (function(myArray) {
+      var search_input;
+
+      function _onInputSearch(e) {
+        search_input = e.target;
+        var tables = document.getElementsByClassName(search_input.getAttribute('data-table'));
+        myArray.forEach.call(tables, function(table) {
+          myArray.forEach.call(table.tBodies, function(tbody) {
+            myArray.forEach.call(tbody.rows, function(row) {
+              var text_content = row.textContent.toLowerCase();
+              var search_val = search_input.value.toLowerCase();
+              row.style.display = text_content.indexOf(search_val) > -1 ? '' : 'none';
+            });
+          });
+        });
+      }
+
+      return {
+        init: function() {
+          var inputs = document.getElementsByClassName('search-input');
+          myArray.forEach.call(inputs, function(input) {
+            input.oninput = _onInputSearch;
+          });
+        }
+      };
+    })(Array.prototype);
+
+    document.addEventListener('readystatechange', function() {
+      if (document.readyState === 'complete') {
+        TableFilter.init();
       }
     });
-  });
+
+  })(document);
 </script>
 
 </body>
