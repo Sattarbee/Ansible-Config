@@ -1,3 +1,4 @@
+---
 - name: Create Linux Report with Security Patches Only
   hosts: Linux
   become: true
@@ -6,8 +7,12 @@
     detailedreport: true
 
   tasks:
+    - name: Refresh yum metadata cache
+      command: yum makecache
+      changed_when: false
+
     - name: Get list of applicable security patches
-      shell: yum updateinfo list security
+      command: yum updateinfo list security
       register: security_patches
       changed_when: false
 
@@ -34,14 +39,24 @@
         name: shadowman_scan_systems
       when: detailedreport
 
-# Run once to build report using data from all hosts
-- name: Build the report using all hosts' data
-  hosts: Linux
-  run_once: true
-  gather_facts: true
-  become: true
+- name: Aggregate patch info from all hosts
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: Aggregate patch info facts from Linux hosts
+      set_fact:
+        all_patch_info: "{{ groups['Linux'] | map('extract', hostvars, 'patch_info') | list }}"
 
+    - name: Debug aggregated patch info
+      debug:
+        var: all_patch_info
+
+- name: Build the report using aggregated data
+  hosts: localhost
+  gather_facts: false
   tasks:
     - name: Build the report
       include_role:
         name: build_report_linux
+      vars:
+        aggregated_patch_info: "{{ all_patch_info }}"
