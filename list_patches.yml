@@ -15,33 +15,6 @@
       debug:
         var: available_patches.stdout_lines
 
-    - name: Set patch list fact (filtered output)
-      set_fact:
-        available_patch_info: |
-          Available Patches:
-          {% if available_patches.stdout_lines %}
-          {% for line in available_patches.stdout_lines %}
-          {% if line and
-                not line.startswith('Loaded plugins:') and
-                not line.startswith('Obsoleting Packages') and
-                not line.startswith('Security:') and
-                not line.startswith('Updated Packages') and
-                not line.startswith('Security') and
-                not line.startswith('Warning:') and
-                not line.startswith('No packages marked for update') %}
-          - {{ line }}
-          {% endif %}
-          {% endfor %}
-          {% else %}
-          - No patches available.
-          {% endif %}
-
-    - name: Save available patch info to file for local inspection
-      copy:
-        content: "{{ available_patch_info }}"
-        dest: "/tmp/available_patches_info.txt"
-        mode: '0644'
-
     - name: Scan Systems for detailed report
       include_role:
         name: shadowman_scan_systems
