@@ -16,21 +16,44 @@
         collapsible: true
       });
     });
+
+    // Search filter
+    function filterHosts() {
+      var input = document.getElementById("searchInput");
+      var filter = input.value.toLowerCase();
+      var cards = document.getElementsByClassName("card");
+      for (var i = 0; i < cards.length; i++) {
+        var hostname = cards[i].getElementsByClassName("hostname")[0];
+        if (hostname) {
+          var txtValue = hostname.textContent || hostname.innerText;
+          if (txtValue.toLowerCase().indexOf(filter) > -1) {
+            cards[i].style.display = "";
+          } else {
+            cards[i].style.display = "none";
+          }
+        }
+      }
+    }
   </script>
   <style>
     body { font-family: "Open Sans", sans-serif; background: #f4f6f9; margin: 0; padding: 0; }
     header { background: #111; padding: 15px; }
     .header-container img { height: 40px; }
     section { padding: 20px; }
-    h1 { background: #1a1d23; color: #fff; padding: 15px; border-radius: 6px; }
+    h1 { background: #1a1d23; color: #fff; padding: 15px; border-radius: 6px; display: inline-block; }
     .download-btn { float: right; margin-top: -45px; margin-right: 20px; padding: 8px 15px; background: #fff; border: 1px solid #333; border-radius: 4px; cursor: pointer; }
+    .search-box { margin: 15px 0; }
+    .search-box input { padding: 8px; width: 300px; border-radius: 4px; border: 1px solid #ccc; }
     .card { background: #fff; border-radius: 8px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 6px rgba(0,0,0,0.15); }
     .hostname { font-size: 20px; font-weight: bold; display: inline-block; margin-left: 10px; }
     .status { background: #28a745; color: #fff; font-size: 12px; padding: 4px 10px; border-radius: 12px; margin-left: 10px; }
     .details { margin-top: 10px; font-size: 14px; }
     .accordion { margin-top: 10px; }
     .accordion h3 { font-size: 14px; cursor: pointer; padding: 6px; }
-    .accordion pre { background: #f8f9fa; padding: 10px; border-radius: 4px; overflow-x: auto; }
+    .accordion table { width:100%; border-collapse: collapse; font-size:14px; margin-top:8px; }
+    .accordion th { background:#c00; color:#fff; padding:8px; text-align:left; }
+    .accordion td { padding:6px; border:1px solid #ddd; }
+    .accordion ul { margin:0; padding-left:18px; }
   </style>
 </head>
 <body>
@@ -46,6 +69,10 @@
   <section>
     <h1>Ansible Linux Automation Report</h1>
     <button class="download-btn">Download CSV</button>
+
+    <div class="search-box">
+      <input type="text" id="searchInput" onkeyup="filterHosts()" placeholder="Search for hostname...">
+    </div>
 
     {% for linux_host in ansible_play_hosts|sort %}
     <div class="card">
@@ -65,7 +92,43 @@
       <div class="accordion">
         <h3>Last Patch Info</h3>
         <div>
-          <pre>{{ hostvars[linux_host]['last_patch_info']|default('No patch info available') }}</pre>
+          <table>
+            <thead>
+              <tr>
+                <th colspan="2">Last Patch Info</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><b>IP Address</b></td>
+                <td>{{ hostvars[linux_host]['ansible_host']|default("N/A") }}</td>
+              </tr>
+              <tr>
+                <td><b>User ID</b></td>
+                <td>{{ hostvars[linux_host]['ansible_user_id']|default("N/A") }}</td>
+              </tr>
+              <tr>
+                <td><b>System Date</b></td>
+                <td>{{ hostvars[linux_host]['system_date']|default("N/A") }}</td>
+              </tr>
+              <tr>
+                <td><b>Last Reboot Time</b></td>
+                <td>{{ hostvars[linux_host]['last_reboot']|default("N/A") }}</td>
+              </tr>
+              <tr>
+                <td valign="top"><b>Last 15 Installed Packages</b></td>
+                <td>
+                  <ul>
+                    {% for pkg in hostvars[linux_host]['last_installed_packages']|default([]) %}
+                    <li>{{ pkg }}</li>
+                    {% else %}
+                    <li>No package data available</li>
+                    {% endfor %}
+                  </ul>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
