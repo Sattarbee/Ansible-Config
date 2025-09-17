@@ -24,7 +24,8 @@
     owner: root
     group: root
     mode: '0644'
-  when: usesingletemplate
+  vars:
+    usesingletemplate:true
 
 - name: Copy CSS over
   ansible.builtin.copy:
