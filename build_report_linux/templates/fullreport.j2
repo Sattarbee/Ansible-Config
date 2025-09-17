@@ -1,71 +1,192 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Ansible Patch Report</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        .host-card { border: 1px solid #ccc; border-radius: 8px; margin: 15px; padding: 15px; background: #f9f9f9; }
-        .host-header { font-size: 20px; font-weight: bold; margin-bottom: 10px; }
-        .status { padding: 4px 8px; border-radius: 5px; color: white; font-size: 12px; }
-        .status.up-to-date { background: green; }
-        .status.pending { background: orange; }
-        .status.failed { background: red; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        table, th, td { border: 1px solid #ccc; padding: 8px; text-align: left; vertical-align: top; }
-        th { background: #eee; }
-        .search-box { margin-bottom: 20px; }
-        .search-input { width: 100%; padding: 8px; font-size: 14px; border: 1px solid #ccc; border-radius: 5px; }
-    </style>
-    <script>
-        function searchHosts() {
-            let input = document.getElementById("searchInput").value.toLowerCase();
-            let cards = document.getElementsByClassName("host-card");
-            for (let i = 0; i < cards.length; i++) {
-                let cardText = cards[i].innerText.toLowerCase();
-                cards[i].style.display = cardText.includes(input) ? "" : "none";
-            }
-        }
-    </script>
+  <meta charset="UTF-8">
+  <title>Ansible Linux Automation Report</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f8f9fa;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background: #000;
+      padding: 15px;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    header img {
+      height: 40px;
+    }
+    h1 {
+      text-align: center;
+      background: #1a1a1a;
+      color: #fff;
+      padding: 15px;
+      margin: 0;
+    }
+    .search-bar {
+      margin: 20px;
+      text-align: right;
+    }
+    .search-bar input {
+      padding: 8px;
+      width: 300px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    .host-card {
+      background: #fff;
+      margin: 15px;
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .host-card h2 {
+      margin: 0;
+      font-size: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .status {
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      color: #fff;
+    }
+    .status.up { background: #28a745; }
+    .status.down { background: #dc3545; }
+    .accordion h3 {
+      background: #c00;
+      color: #fff;
+      padding: 10px;
+      cursor: pointer;
+      margin: 10px 0 0 0;
+      border-radius: 5px 5px 0 0;
+    }
+    .accordion div {
+      display: none;
+      padding: 0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    th {
+      background: #c00;
+      color: #fff;
+      padding: 8px;
+      text-align: left;
+    }
+    td {
+      padding: 6px;
+      border: 1px solid #ddd;
+    }
+    ul {
+      margin: 0;
+      padding-left: 18px;
+    }
+  </style>
 </head>
 <body>
-    <h1>Ansible Patch Report</h1>
 
-    <div class="search-box">
-        <input type="text" id="searchInput" class="search-input" onkeyup="searchHosts()" placeholder="Search for a host, IP, or package...">
+<header>
+  <div>
+    <img src="https://www.redhat.com/profiles/rh/themes/redhatdotcom/img/logo.png" alt="Red Hat Logo">
+    <span style="font-size:18px; margin-left:10px;">Ansible</span>
+  </div>
+</header>
+
+<h1>Ansible Linux Automation Report</h1>
+
+<div class="search-bar">
+  <input type="text" id="searchInput" placeholder="Search host or IP...">
+</div>
+
+{% for linux_host in groups['linux'] %}
+<div class="host-card" data-host="{{ linux_host }} {{ hostvars[linux_host]['ansible_host'] }}">
+  <h2>
+    <i class="fa fa-server"></i> {{ linux_host }}
+    <span class="status up">Up-to-date</span>
+  </h2>
+
+  <p>
+    <b>Package Manager:</b> {{ hostvars[linux_host]['package_manager'] | default("N/A") }}
+    | <b>OS:</b> {{ hostvars[linux_host]['ansible_distribution'] }} {{ hostvars[linux_host]['ansible_distribution_version'] }}
+    | <b>Kernel:</b> {{ hostvars[linux_host]['ansible_kernel'] }}
+  </p>
+
+  <!-- Accordion with Last Patch Info -->
+  <div class="accordion">
+    <h3>Last Patch Info</h3>
+    <div>
+      <table>
+        <thead>
+          <tr>
+            <th colspan="2">Last Patch Info</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><b>IP Address</b></td>
+            <td>{{ hostvars[linux_host]['ansible_host'] | default("N/A") }}</td>
+          </tr>
+          <tr>
+            <td><b>User ID</b></td>
+            <td>{{ hostvars[linux_host]['ansible_user_id'] | default("N/A") }}</td>
+          </tr>
+          <tr>
+            <td><b>System Date</b></td>
+            <td>{{ hostvars[linux_host]['system_date'].stdout | default("N/A") }}</td>
+          </tr>
+          <tr>
+            <td><b>Last Reboot Time</b></td>
+            <td>{{ hostvars[linux_host]['last_reboot'].stdout | default("N/A") }}</td>
+          </tr>
+          <tr>
+            <td valign="top"><b>Last 15 Installed Packages</b></td>
+            <td>
+              <ul>
+                {% for pkg in hostvars[linux_host]['last_installed_packages'].stdout_lines | default([]) %}
+                  <li>{{ pkg }}</li>
+                {% else %}
+                  <li>No package data available</li>
+                {% endfor %}
+              </ul>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
+  </div>
+</div>
+{% endfor %}
 
-    {% for linux_host in groups['all'] %}
-    <div class="host-card">
-        <div class="host-header">
-            {{ hostvars[linux_host]['ansible_hostname'] 
-               | default(hostvars[linux_host]['inventory_hostname'].split('.')[0]) }}
-            <span class="status up-to-date">Up-to-date</span>
-        </div>
-        <p><strong>Package Manager:</strong> {{ hostvars[linux_host]['ansible_pkg_mgr'] | default('N/A') }}</p>
-        <p><strong>OS:</strong> {{ hostvars[linux_host]['ansible_distribution'] | default('N/A') }} {{ hostvars[linux_host]['ansible_distribution_version'] | default('') }}</p>
-        <p><strong>Kernel:</strong> {{ hostvars[linux_host]['ansible_kernel'] | default('N/A') }}</p>
+<script>
+  // Accordion toggle
+  document.querySelectorAll(".accordion h3").forEach(function(header) {
+    header.addEventListener("click", function() {
+      var panel = this.nextElementSibling;
+      panel.style.display = (panel.style.display === "block") ? "none" : "block";
+    });
+  });
 
-        <h3>Last Patch Info</h3>
-        <table>
-            <tr><th>IP Address</th><td>{{ hostvars[linux_host]['ansible_host'] | default('N/A') }}</td></tr>
-            <tr><th>User ID</th><td>{{ hostvars[linux_host]['ansible_user'] | default('N/A') }}</td></tr>
-            <tr><th>System Date</th><td>{{ hostvars[linux_host]['system_date'].stdout | default('N/A') }}</td></tr>
-            <tr><th>Last Reboot Time</th><td>{{ hostvars[linux_host]['last_reboot'].stdout | default('N/A') }}</td></tr>
-            <tr>
-                <th>Last 15 Installed Packages</th>
-                <td>
-                    {% if hostvars[linux_host]['last_installed_packages'] is defined and hostvars[linux_host]['last_installed_packages'].stdout_lines %}
-                        {% for pkg in hostvars[linux_host]['last_installed_packages'].stdout_lines %}
-                            - {{ pkg }}<br>
-                        {% endfor %}
-                    {% else %}
-                        No package data available
-                    {% endif %}
-                </td>
-            </tr>
-        </table>
-    </div>
-    {% endfor %}
+  // Search filter
+  document.getElementById("searchInput").addEventListener("keyup", function() {
+    var filter = this.value.toLowerCase();
+    var hosts = document.getElementsByClassName("host-card");
+    for (var i = 0; i < hosts.length; i++) {
+      var text = hosts[i].getAttribute("data-host").toLowerCase();
+      hosts[i].style.display = text.includes(filter) ? "" : "none";
+    }
+  });
+</script>
+
 </body>
 </html>
