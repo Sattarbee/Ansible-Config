@@ -36,7 +36,7 @@
       when: detailedreport
 
 - name: Build combined patch report on localhost
-  hosts: localhost
+  hosts: Linux
   gather_facts: false
   become: false
   run_once: true
