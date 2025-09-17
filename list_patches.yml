@@ -6,7 +6,7 @@
 
   tasks:
     - name: Get list of available patches (security and others)
-      shell: yum check-update
+      shell: dnf check-update
       register: available_patches
       changed_when: false
       failed_when: false   # So play doesn’t fail if no updates available
