@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Test Search Box</title>
+  <title>Test Search Box for Cards</title>
   <style>
     body {
       background: #353a40;
@@ -15,6 +15,24 @@
       justify-content: space-between;
       align-items: center;
     }
+    .host-card {
+      background: #222;
+      border-radius: 8px;
+      padding: 15px;
+      margin: 15px 20px;
+      color: white;
+    }
+    .hostname {
+      font-weight: bold;
+      font-size: 18px;
+      display: inline-block;
+      vertical-align: middle;
+    }
+    .host-icon {
+      width: 35px;
+      margin-right: 10px;
+      vertical-align: middle;
+    }
   </style>
 </head>
 <body>
@@ -23,64 +41,41 @@
   <a href="https://ansible.com" style="color: white; text-decoration: none; font-weight: bold;">Red Hat Ansible</a>
   <input
     type="text"
-    class="search-input"
-    data-table="main_net_table"
+    id="search-host"
     placeholder="Search Hostname..."
     style="background-color: white; color: black; border: 1px solid #ccc; padding: 6px 10px; font-size: 14px; border-radius: 4px; width: 200px;"
   />
 </header>
 
-<table class="main_net_table" border="1" style="width: 100%; margin-top: 20px; background: white; color: black;">
-  <thead>
-    <tr><th>Linux Device</th><th>Other</th></tr>
-  </thead>
-  <tbody>
-    <tr><td>host1</td><td>abc</td></tr>
-    <tr><td>host2</td><td>def</td></tr>
-    <tr><td>testhost</td><td>ghi</td></tr>
-  </tbody>
-</table>
+<div id="hosts-container">
+  <div class="host-card">
+    <img class="host-icon" src="server.png" alt="server" />
+    <span class="hostname">ansible-linux</span>
+    <span style="background: #28a745; padding: 2px 8px; border-radius: 4px; font-size: 12px; margin-left: 8px;">Up-to-date</span>
+    <div>Package Manager: dnf &nbsp;&nbsp; OS: RedHat 9.6 &nbsp;&nbsp; Kernel: 5.14.0-570...</div>
+  </div>
+  <div class="host-card">
+    <img class="host-icon" src="server.png" alt="server" />
+    <span class="hostname">mtpansibletower</span>
+    <span style="background: #28a745; padding: 2px 8px; border-radius: 4px; font-size: 12px; margin-left: 8px;">Up-to-date</span>
+    <div>Package Manager: dnf &nbsp;&nbsp; OS: RedHat 9.6 &nbsp;&nbsp; Kernel: 5.14.0-570...</div>
+  </div>
+</div>
 
 <script>
-  (function(document) {
-      'use strict';
+  document.getElementById('search-host').addEventListener('input', function() {
+    const filter = this.value.toLowerCase();
+    const hosts = document.querySelectorAll('#hosts-container .host-card');
 
-      var TableFilter = (function(myArray) {
-          var search_input;
-
-          function _onInputSearch(e) {
-              search_input = e.target;
-              var tables = document.getElementsByClassName(search_input.getAttribute('data-table'));
-              myArray.forEach.call(tables, function(table) {
-                  myArray.forEach.call(table.tBodies, function(tbody) {
-                      myArray.forEach.call(tbody.rows, function(row) {
-                          var cell = row.cells[0];
-                          if (!cell) return;
-                          var text_content = cell.textContent.toLowerCase();
-                          var search_val = search_input.value.toLowerCase();
-                          row.style.display = text_content.indexOf(search_val) > -1 ? '' : 'none';
-                      });
-                  });
-              });
-          }
-
-          return {
-              init: function() {
-                  var inputs = document.getElementsByClassName('search-input');
-                  myArray.forEach.call(inputs, function(input) {
-                      input.oninput = _onInputSearch;
-                  });
-              }
-          };
-      })(Array.prototype);
-
-      document.addEventListener('readystatechange', function() {
-          if (document.readyState === 'complete') {
-              TableFilter.init();
-          }
-      });
-
-  })(document);
+    hosts.forEach(card => {
+      const hostname = card.querySelector('.hostname').textContent.toLowerCase();
+      if (hostname.includes(filter)) {
+        card.style.display = '';
+      } else {
+        card.style.display = 'none';
+      }
+    });
+  });
 </script>
 
 </body>
