@@ -5,6 +5,24 @@
     detailedreport: true
 
   tasks:
+    - name: Get available security patches using dnf
+      shell: dnf updateinfo list security
+      register: security_patches
+      changed_when: false
+      failed_when: false
+
+    - name: Set security patches fact
+      set_fact:
+        security_patch_info: |
+          Security Updates Available:
+          {% if security_patches.stdout_lines %}
+          {% for line in security_patches.stdout_lines %}
+          - {{ line }}
+          {% endfor %}
+          {% else %}
+          - No security patches available.
+          {% endif %}
+
     - name: Get system date
       shell: date
       register: system_date
