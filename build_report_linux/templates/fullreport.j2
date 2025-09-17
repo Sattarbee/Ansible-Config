@@ -51,7 +51,10 @@
     <div class="card">
       <div>
         <img src="server.png" alt="server" width="24" style="vertical-align: middle;">
-        <span class="hostname">{{ hostvars[linux_host]['inventory_hostname'].split('.')[0] }}</span>
+        <span class="hostname">
+          {{ hostvars[linux_host]['ansible_hostname'] 
+             | default(hostvars[linux_host]['inventory_hostname'].split('.')[0]) }}
+        </span>
         <span class="status">Up-to-date</span>
       </div>
       <div class="details">
