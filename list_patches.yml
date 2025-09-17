@@ -1,4 +1,4 @@
-- name: Scan Linux hosts for security patches
+- name: Get Available Patches Info from Linux Hosts
   hosts: Linux
   become: true
   gather_facts: true
@@ -6,22 +6,46 @@
     detailedreport: true
 
   tasks:
-    - name: Run scan role to gather patch info
+    - name: Get list of available patches (security and others)
+      shell: yum check-update
+      register: available_patches
+      changed_when: false
+      failed_when: false   # So play doesn’t fail if no updates available
+
+    - name: Set patch list fact
+      set_fact:
+        available_patch_info: |
+          Available Patches:
+          {% if available_patches.stdout_lines %}
+          {% for line in available_patches.stdout_lines %}
+          - {{ line }}
+          {% endfor %}
+          {% else %}
+          - No patches available.
+          {% endif %}
+
+    - name: Save available patch info to file for local inspection
+      copy:
+        content: "{{ available_patch_info }}"
+        dest: "/tmp/available_patches_info.txt"
+        mode: '0644'
+
+    - name: Scan Systems for detailed report
       include_role:
         name: shadowman_scan_systems
+      when: detailedreport
 
-- name: Build combined report on localhost
-  hosts: Linux
+- name: Build combined patch report on localhost
+  hosts: localhost
   gather_facts: false
   become: false
   run_once: true
 
   vars:
-    # Aggregate patch info facts from all Linux hosts
-    aggregated_patch_info: "{{ groups['Linux'] | map('extract', hostvars, 'patch_info') | list }}"
+    aggregated_patch_info: "{{ groups['Linux'] | map('extract', hostvars, 'available_patch_info') | list }}"
 
   tasks:
-    - name: Build combined report using aggregated patch info
+    - name: Build combined patch report using aggregated patch info
       include_role:
         name: build_report_linux
       vars:
