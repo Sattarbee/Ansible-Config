@@ -20,125 +20,69 @@
   </script>
 </head>
 <body>
-<div class="wrapper">
-  <header>
-    <div class="header-container" style="display: flex; justify-content: space-between; align-items: center; padding: 10px 20px;">
-      <a href="https://ansible.com" style="display: flex; align-items: center; text-decoration: none;">
-        <img
-          class="header-logo"
-          src="redhat-ansible-logo.svg"
-          title="Red Hat Ansible"
-          alt="Red Hat Ansible"
-          style="height: 40px; margin-right: 10px;"
-        />
-        <span style="color: white; font-weight: bold; font-size: 18px;">Red Hat Ansible</span>
-      </a>
+  <div class="wrapper">
+    <header>
+      <div class="header-container" style="display: flex; justify-content: space-between; align-items: center; padding: 10px 20px;">
+        <a href="https://ansible.com" style="display: flex; align-items: center; text-decoration: none;">
+          <img class="header-logo" src="redhat-ansible-logo.svg" title="Red Hat Ansible" alt="Red Hat Ansible" style="height: 40px; margin-right: 10px;" />
+          <span style="color: white; font-weight: bold; font-size: 18px;">Red Hat Ansible</span>
+        </a>
+        <input type="text" id="search-bar" placeholder="Search..." style="background-color: white; color: black; border: 1px solid #ccc; padding: 6px 10px; font-size: 14px; border-radius: 4px; width: 200px;" />
+      </div>
+    </header>
 
-      <input
-        type="text"
-        id="search-bar"
-        class="search-input"
-        data-table="main_net_table"
-        placeholder="Search..."
-        style="background-color: white; color: black; border: 1px solid #ccc; padding: 6px 10px; font-size: 14px; border-radius: 4px; width: 200px;"
-      />
-    </div>
-  </header>
+    <section>
+      <center>
+        <h1>Ansible Linux Automation Report</h1>
+      </center>
 
-  <section>
-    <center>
-      <h1>Ansible Linux Automation Report</h1>
-    </center>
+      <table class="table table-striped mt32 main_net_table">
+        <thead>
+          <tr>
+            <th>Linux Device</th>
+            <th>Package Manager</th>
+            <th>Operating System</th>
+            <th>Operating System Version</th>
+            <th>Operating System Kernel Version</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for linux_host in ansible_play_hosts|sort %}
+          <tr>
+            <td class="summary_info">
+              <div id="hostname">
+                <p class="hostname">
+                  <img class="router_image" src="server.png"> {{ hostvars[linux_host]['inventory_hostname'].split('.')[0] }}
+                </p>
+              </div>
 
-    <table class="table table-striped mt32 main_net_table">
-      <thead>
-        <tr>
-          <th>Linux Device</th>
-          <th>Package Manager</th>
-          <th>Operating System</th>
-          <th>Operating System Version</th>
-          <th>Operating System Kernel Version</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for linux_host in ansible_play_hosts|sort %}
-        <tr>
-          <td class="summary_info">
-            <div id="hostname">
-              <p class="hostname">
-                <img class="router_image" src="server.png"> {{ hostvars[linux_host]['inventory_hostname'].split('.')[0] }}
-              </p>
-            </div>
-
-            <!-- ONLY Last Patch Info SECTION -->
-            <div id="accordion">
-              <div class="ui-accordion ui-widget ui-helper-reset" role="tablist">
-                <h3 class="ui-accordion-header ui-corner-top ui-state-default ui-accordion-icons ui-accordion-header-collapsed ui-corner-all" role="tab" aria-selected="false" aria-expanded="false" tabindex="0">
-                  Last Patch Info
-                </h3>
-                <div class="net_content ui-accordion-content ui-corner-bottom ui-helper-reset ui-widget-content" role="tabpanel" aria-hidden="true" style="display: none; height: 194px;">
-                  <pre>{{ hostvars[linux_host]['last_patch_info']|default('No patch info available') }}</pre>
+              <!-- ONLY Last Patch Info SECTION -->
+              <div id="accordion">
+                <div class="ui-accordion ui-widget ui-helper-reset" role="tablist">
+                  <h3 class="ui-accordion-header ui-corner-top ui-state-default ui-accordion-icons ui-accordion-header-collapsed ui-corner-all" role="tab" aria-selected="false" aria-expanded="false" tabindex="0">
+                    Last Patch Info
+                  </h3>
+                  <div class="net_content ui-accordion-content ui-corner-bottom ui-helper-reset ui-widget-content" role="tabpanel" aria-hidden="true" style="display: none; height: 194px;">
+                    <pre>{{ hostvars[linux_host]['last_patch_info']|default('No patch info available') }}</pre>
+                  </div>
                 </div>
               </div>
-            </div>
-            <!-- END Last Patch Info SECTION -->
-          </td>
-          <td>{{ hostvars[linux_host]['ansible_pkg_mgr']|default("none") }}</td>
-          <td>{{ hostvars[linux_host]['ansible_os_family']|default("none") }}</td>
-          <td>{{ hostvars[linux_host]['ansible_distribution_version']|default("none") }}</td>
-          <td>{{ hostvars[linux_host]['ansible_kernel']|default("none") }}</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+              <!-- END Last Patch Info SECTION -->
+            </td>
+            <td>{{ hostvars[linux_host]['ansible_pkg_mgr']|default("none") }}</td>
+            <td>{{ hostvars[linux_host]['ansible_os_family']|default("none") }}</td>
+            <td>{{ hostvars[linux_host]['ansible_distribution_version']|default("none") }}</td>
+            <td>{{ hostvars[linux_host]['ansible_kernel']|default("none") }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
 
-    <center>
-      <p>Created with</p><br>
-      <img src="webpage_logo.png" width="300">
-    </center>
-  </section>
-</div>
-
-<!-- Search filter script -->
-<script>
-  (function(document) {
-    'use strict';
-
-    var TableFilter = (function(myArray) {
-      var search_input;
-
-      function _onInputSearch(e) {
-        search_input = e.target;
-        var tables = document.getElementsByClassName(search_input.getAttribute('data-table'));
-        myArray.forEach.call(tables, function(table) {
-          myArray.forEach.call(table.tBodies, function(tbody) {
-            myArray.forEach.call(tbody.rows, function(row) {
-              var text_content = row.textContent.toLowerCase();
-              var search_val = search_input.value.toLowerCase();
-              row.style.display = text_content.indexOf(search_val) > -1 ? '' : 'none';
-            });
-          });
-        });
-      }
-
-      return {
-        init: function() {
-          var inputs = document.getElementsByClassName('search-input');
-          myArray.forEach.call(inputs, function(input) {
-            input.oninput = _onInputSearch;
-          });
-        }
-      };
-    })(Array.prototype);
-
-    document.addEventListener('readystatechange', function() {
-      if (document.readyState === 'complete') {
-        TableFilter.init();
-      }
-    });
-
-  })(document);
-</script>
-
+      <center>
+        <p>Created with</p><br>
+        <img src="webpage_logo.png" width="300">
+      </center>
+    </section>
+  </div>
 </body>
 </html>
