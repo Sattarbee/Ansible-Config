@@ -59,7 +59,7 @@
   </tbody>
 </table>
 
-<!-- New Security Patches Table -->
+<!-- Security Patches Section -->
 <h2 style="color: white; margin-top: 40px;">Security Patches Available on Hosts</h2>
 <table border="1" style="width: 100%; background: white; color: black;">
   <thead>
@@ -73,8 +73,8 @@
     <tr>
       <td>{{ host }}</td>
       <td>
-        {% set patches = all_security_patches[loop.index0] | default('No data available') %}
-        {% if patches and patches != 'No data available' %}
+        {% set patches = all_security_patches[loop.index0] | default('No security patches available.') %}
+        {% if patches != 'No security patches available.' %}
           <ul>
           {% for line in patches.split('\n') %}
             {% if line.strip() %}
