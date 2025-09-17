@@ -52,7 +52,7 @@
         var: all_patch_info
 
 - name: Build the report using aggregated data
-  hosts: localhost
+  hosts: Linux
   gather_facts: false
   tasks:
     - name: Build the report
