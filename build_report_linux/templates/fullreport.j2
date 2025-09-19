@@ -1,112 +1,59 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ansible Linux Automation Report</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 0;
-        }
-        .container {
-            width: 80%;
-            margin: 50px auto;
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .header h1 {
-            font-size: 24px;
-            color: #333;
-        }
-        .status {
-            padding: 10px 20px;
-            background-color: #4caf50;
-            color: white;
-            border-radius: 5px;
-            font-size: 14px;
-        }
-        .section-title {
-            background-color: #f44336;
-            color: white;
-            padding: 10px;
-            border-radius: 5px;
-            font-size: 18px;
-            margin-top: 20px;
-        }
-        .table {
-            width: 100%;
-            margin-top: 20px;
-            border-collapse: collapse;
-        }
-        .table td, .table th {
-            padding: 12px;
-            text-align: left;
-            border: 1px solid #ddd;
-        }
-        .table th {
-            background-color: #f1f1f1;
-        }
-        .list {
-            list-style-type: none;
-            padding: 0;
-        }
-        .list li {
-            padding: 5px 0;
-        }
-    </style>
+<meta charset="UTF-8">
+<title>Ansible Linux Automation Report</title>
+<style>
+  body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+  .header { background: #1a1a1a; color: white; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; }
+  .header .logo { display: flex; align-items: center; }
+  .header img { height: 30px; margin-right: 10px; }
+  .header .download { background: white; color: black; padding: 5px 10px; border-radius: 4px; text-decoration: none; }
+  .container { background: white; padding: 20px; margin-top: 10px; border-radius: 8px; box-shadow: 0 0 5px rgba(0,0,0,0.2); }
+  .up-to-date { background: #28a745; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.9em; margin-left: 10px; }
+  .info { margin-bottom: 15px; }
+  .info span { font-weight: bold; }
+  .last-patch { background: #dc3545; color: white; padding: 10px; border-radius: 4px; margin-bottom: 10px; }
+  table { width: 100%; border-collapse: collapse; }
+  th, td { padding: 8px 12px; border: 1px solid #ddd; text-align: left; }
+  ul { padding-left: 20px; }
+</style>
 </head>
 <body>
 
+<div class="header">
+  <div class="logo">
+    <img src="redhat-logo.png" alt="Red Hat Logo">
+    <span>ansible-linux <span class="up-to-date">Up-to-date</span></span>
+  </div>
+  <a class="download" href="#">Download CSV</a>
+</div>
+
 <div class="container">
-    <!-- Header with Package Info -->
-    <div class="header">
-        <h1>Ansible Linux Automation Report</h1>
-        <div class="status">Up-to-date</div>
-    </div>
+  <div class="info">
+    <span>Package Manager:</span> dnf &nbsp; | &nbsp;
+    <span>OS:</span> RedHat 9.6 &nbsp; | &nbsp;
+    <span>Kernel:</span> 5.14.0-570.42.2.el9_6.x86_64
+  </div>
 
-    <!-- Last Patch Info Section -->
-    <div class="section-title">Last Patch Info</div>
-    <table class="table">
-        <tr>
-            <th>IP Address</th>
-            <td>172.25.225.89</td>
-        </tr>
-        <tr>
-            <th>User ID</th>
-            <td>insve7fz</td>
-        </tr>
-        <tr>
-            <th>System Date</th>
-            <td>Wed Sep 17 05:44:16 AM EDT 2025</td>
-        </tr>
-        <tr>
-            <th>Last Reboot Time</th>
-            <td>2025-09-15 04:14</td>
-        </tr>
-    </table>
-
-    <!-- Installed Packages List -->
-    <div class="section-title">Last 15 Installed Packages</div>
-    <ul class="list">
-        <li>mod_lua-2.4.62-4.el9_6.4.x86_64</li>
-        <li>mod_http2-2.0.26-4.el9_6.1.x86_64</li>
-        <li>httpd-core-2.4.62-4.el9_6.4.x86_64</li>
-        <li>httpd-2.4.62-4.el9_6.4.x86_64</li>
-        <li>httpd-tools-2.4.62-4.el9_6.4.x86_64</li>
-        <li>httpd-filesystem-2.4.62-4.el9_6.4.noarch</li>
-        <li>apr-util-openssl-1.6.1-2.el9_6.4.x86_64</li>
-        <!-- Add more packages as needed -->
-    </ul>
+  <div class="last-patch">Last Patch Info</div>
+  <table>
+    <tr><td><span>IP Address:</span></td><td>172.25.225.89</td></tr>
+    <tr><td><span>User ID:</span></td><td>insve7fz</td></tr>
+    <tr><td><span>System Date:</span></td><td>Wed Sep 17 05:44:16 AM EDT 2025</td></tr>
+    <tr><td><span>Last Reboot Time:</span></td><td>2025-09-15 04:14</td></tr>
+    <tr><td><span>Last 15 Installed Packages:</span></td>
+        <td>
+          <ul>
+            <li>mod_lua-2.4.62-4.el9_6.4.x86_64</li>
+            <li>mod_http2-2.0.26-4.el9_6.1.x86_64</li>
+            <li>httpd-core-2.4.62-4.el9_6.4.x86_64</li>
+            <li>httpd-2.4.62-4.el9_6.4.x86_64</li>
+            <li>httpd-tools-2.4.62-4.el9_6.4.x86_64</li>
+          </ul>
+        </td>
+    </tr>
+  </table>
 </div>
 
 </body>
