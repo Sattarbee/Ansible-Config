@@ -143,7 +143,7 @@
           </tr>
           <tr>
             <td><b>Patched By User</b></td>
-            <td>{{ hostvars[linux_host]['patch_user']|default(hostvars[linux_host]['ansible_user_id']|default("N/A")) }}</td>
+            <td>{{ hostvars[linux_host]['patch_user']|default("N/A") }}</td>
           </tr>
           <tr>
             <td><b>System Date</b></td>
@@ -157,7 +157,7 @@
             <td><b>Last 15 Installed Packages</b></td>
             <td>
               {% if hostvars[linux_host]['installed_packages'] is defined %}
-                {% for package in hostvars[linux_host]['installed_packages'][:15] %}
+                {% for package in hostvars[linux_host]['installed_packages'] %}
                   {{ package }}<br>
                 {% endfor %}
               {% else %}
