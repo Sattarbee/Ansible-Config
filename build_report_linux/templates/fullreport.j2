@@ -122,7 +122,7 @@
       <div class="system-header">
         <h4>
           <img src="server.png" width="28">
-          {{ hostvars[linux_host]['inventory_hostname'].split('.')[0] }}
+          {{ hostvars[linux_host]['ansible_hostname'] }}
         </h4>
         <span class="status-badge">Up-to-date</span>
       </div>
@@ -137,7 +137,6 @@
       <div class="patch-header">Last Patch Info</div>
       <div class="patch-body">
         <table id="patch_table">
-          <tr><td><b>IP Address</b></td><td>{{ hostvars[linux_host]['ansible_default_ipv4']['address']|default("N/A") }}</td></tr>
           <tr><td><b>User ID</b></td><td>{{ hostvars[linux_host]['ansible_user_id']|default("N/A") }}</td></tr>
           <tr><td><b>System Date</b></td><td>{{ ansible_date_time.date }} {{ ansible_date_time.time }}</td></tr>
           <tr><td><b>Last Reboot Time</b></td><td>{{ hostvars[linux_host]['ansible_lastboot']|default("N/A") }}</td></tr>
