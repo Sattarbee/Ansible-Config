@@ -7,22 +7,27 @@
 
   <style>
     body { font-family: Arial, sans-serif; background: #f4f6f9; margin: 0; }
-    
+
     /* HEADER */
     .header {
       background: #1c1f23;
       padding: 12px 20px;
       display: flex;
       align-items: center;
-      justify-content: center;
-      position: relative;
-      flex-wrap: wrap; /* allow wrapping on small screens */
+      position: relative; /* for absolute positioning of title and button */
+    }
+    .header img {
+      height: 40px;
+      margin-right: 12px;
+      z-index: 1;
     }
     .header h2 {
       color: white;
       margin: 0;
       font-size: 20px;
-      flex: 1 1 100%; /* full width on small screens */
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
       text-align: center;
     }
     .download-btn-header {
@@ -36,40 +41,16 @@
       border: none;
       border-radius: 4px;
       cursor: pointer;
-    }
-    .search-input-header {
-      position: absolute;
-      left: 20px;
-      top: 50%;
-      transform: translateY(-50%);
-      padding: 6px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-    }
-
-    /* Responsive adjustments */
-    @media (max-width: 600px) {
-      .download-btn-header, .search-input-header {
-        position: static;
-        transform: none;
-        margin-top: 8px;
-        width: 100%;
-      }
-      .header {
-        flex-direction: column;
-        align-items: center;
-      }
+      z-index: 1;
     }
 
     .container { margin-top: 20px; }
 
-    .system-box { 
-      background: white; 
-      border-radius: 6px; 
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1); 
-      padding: 15px; 
-      margin-bottom: 20px; 
-    }
+    .top-actions { text-align: center; margin-bottom: 15px; }
+    .download-btn { padding: 6px 12px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
+    .search-input { padding: 6px; margin-left: 10px; border: 1px solid #ccc; border-radius: 4px; }
+
+    .system-box { background: white; border-radius: 6px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); padding: 15px; margin-bottom: 20px; }
     .system-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
     .system-header h4 { margin: 0; font-size: 18px; }
     .status-badge { background: #28a745; color: white; padding: 3px 8px; border-radius: 10px; font-size: 12px; font-weight: bold; }
@@ -125,12 +106,17 @@
 <body>
   <!-- HEADER -->
   <div class="header">
-    <input type="search" id="search-main" placeholder="Search..." class="search-input-header" onkeyup="filterTable('search-main','patch_table')"/>
+    <img src="redhat-ansible-logo.svg" alt="Red Hat Ansible">
     <h2>Ansible Linux Automation Report</h2>
     <button class="download-btn-header" onclick="downloadCSV('patch_table','ansible_report.csv')">Download CSV</button>
   </div>
 
   <div class="container">
+    <!-- Actions -->
+    <div class="top-actions">
+      <input type="search" id="search-main" placeholder="Search..." class="search-input" onkeyup="filterTable('search-main','patch_table')"/>
+    </div>
+
     {% for linux_host in ansible_play_hosts|sort %}
     <div class="system-box">
       <div class="system-header">
